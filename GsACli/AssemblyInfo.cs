@@ -25,5 +25,5 @@ using System.Runtime.InteropServices;
 // CS3008 under a formal CLS declaration (same choice as CSVToolkit).
 [assembly: ComVisible(false)]
 
-[assembly: AssemblyVersion("1.1.0.0")]
-[assembly: AssemblyFileVersion("1.1.0.0")]
+[assembly: AssemblyVersion("1.1.1.0")]
+[assembly: AssemblyFileVersion("1.1.1.0")]

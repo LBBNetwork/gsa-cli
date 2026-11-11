@@ -14,16 +14,17 @@
 //     pipe anyway; EOF reads as null, which the caller treats as a clean
 //     exit.
 //   - interactive tty: a small caret editor over Console.ReadKey(true).
-//     Each keystroke re-renders only what changed since the last draw:
-//     the common prefix is left untouched, the cursor is positioned
-//     explicitly at the first differing column, the new suffix is written
-//     there and any leftover old tail beyond it erased - so typing touches
-//     a single small region (and edits anywhere in the line land on the
-//     right columns) while a pure caret move writes nothing at all, which
-//     keeps the console from flickering. The buffer is addressed
-//     relative to the screen row where the prompt first appeared
-//     (Console.CursorTop); wrapping rides the linear cell stream plus
-//     width-based cursor math. Terminals with a broken CursorTop fall
+//     On every content change the whole line is rewritten from its start
+//     cell and conhost does the wrapping/scrolling; immediately after the
+//     write we read back Console.CursorTop/CursorLeft and derive all
+//     further coordinates (line start, caret position) from that measured
+//     ground truth. A pure caret move writes nothing - just a reposition
+//     inside the region we last wrote. Every SetCursorPosition target is
+//     therefore a cell conhost itself reported to us, which can never be
+//     outside the screen buffer: this is what makes long lines safe on
+//     finite buffers (Windows XP's 80x300 default), where predicting rows
+//     from a frozen baseRow ran off the bottom of the buffer and threw
+//     ArgumentOutOfRangeException. Terminals with a broken CursorTop fall
 //     back to the plain path so a REPL never wedges.
 //
 // Control keys (interactive path):
@@ -101,7 +102,8 @@ namespace GsACli
 		{
 			int terminalWidth;
 			int baseRow;
-			if (!ProbeTerminal(out terminalWidth, out baseRow))
+			int baseCol;
+			if (!ProbeTerminal(out terminalWidth, out baseRow, out baseCol))
 			{
 				// CursorTop/Width broken (or a terminal we did not
 				// expect): degrade to plain line reads rather than risk
@@ -111,11 +113,16 @@ namespace GsACli
 
 			StringBuilder text = new StringBuilder();
 			int caret = 0;
-			string lastRendered = string.Empty;
+
+			DrawState st = new DrawState();
+			st.StartRow = baseRow; // line begins where the cursor is now (measured)
+			st.StartCol = baseCol;
+			st.EndRow = baseRow;   // nothing written yet: end coincides with start
+			st.EndCol = baseCol;
 
 			// Draw the empty line up front so the prompt is visible before
 			// any keypress (Redraw otherwise first runs after input).
-			Redraw(text, caret, prompt, baseRow, terminalWidth, ref lastRendered);
+			Redraw(text, caret, prompt, terminalWidth, st);
 
 			while (true)
 			{
@@ -135,7 +142,8 @@ namespace GsACli
 						Console.WriteLine();
 						text.Length = 0;
 						caret = 0;
-						Redraw(text, caret, prompt, baseRow, width, ref lastRendered);
+						ReAnchor(st);
+						Redraw(text, caret, prompt, width, st);
 						continue;
 					}
 
@@ -150,13 +158,14 @@ namespace GsACli
 
 				if (ctrl == '\u0003')
 				{
-					// Ctrl-C: abort - clear the line, keep the session. Consume
-					// any flag the runtime's handler raised for this same keystroke
-					// so it cannot leak into the next command.
+					// Ctrl-C: abort - clear the line in place (prompt rewritten,
+					// leftover tail blanked), keep the session. Consume any flag
+					// the runtime's handler raised for this same keystroke so it
+					// cannot leak into the next command.
 					Abort.Consume();
 					text.Length = 0;
 					caret = 0;
-					Redraw(text, caret, prompt, baseRow, width, ref lastRendered);
+					Redraw(text, caret, prompt, width, st);
 					continue;
 				}
 
@@ -173,21 +182,21 @@ namespace GsACli
 						Console.WriteLine();
 						return null;
 					}
-					Redraw(text, caret, prompt, baseRow, width, ref lastRendered);
+					Redraw(text, caret, prompt, width, st);
 					continue;
 				}
 
 				if (ctrl == '\u0001')
 				{
 					caret = 0;
-					Redraw(text, caret, prompt, baseRow, width, ref lastRendered);
+					Redraw(text, caret, prompt, width, st);
 					continue;
 				}
 
 				if (ctrl == '\u0005')
 				{
 					caret = text.Length;
-					Redraw(text, caret, prompt, baseRow, width, ref lastRendered);
+					Redraw(text, caret, prompt, width, st);
 					continue;
 				}
 
@@ -197,7 +206,7 @@ namespace GsACli
 					{
 						caret--;
 					}
-					Redraw(text, caret, prompt, baseRow, width, ref lastRendered);
+					Redraw(text, caret, prompt, width, st);
 					continue;
 				}
 
@@ -207,7 +216,7 @@ namespace GsACli
 					{
 						caret++;
 					}
-					Redraw(text, caret, prompt, baseRow, width, ref lastRendered);
+					Redraw(text, caret, prompt, width, st);
 					continue;
 				}
 
@@ -218,14 +227,14 @@ namespace GsACli
 						{
 							caret--;
 						}
-						Redraw(text, caret, prompt, baseRow, width, ref lastRendered);
+						Redraw(text, caret, prompt, width, st);
 						continue;
 
 					case ConsoleKey.RightArrow:
 						if (caret < text.Length)
 						{
 							caret++;
-							Redraw(text, caret, prompt, baseRow, width, ref lastRendered);
+							Redraw(text, caret, prompt, width, st);
 						}
 						else
 						{
@@ -235,12 +244,12 @@ namespace GsACli
 
 					case ConsoleKey.Home:
 						caret = 0;
-						Redraw(text, caret, prompt, baseRow, width, ref lastRendered);
+						Redraw(text, caret, prompt, width, st);
 						continue;
 
 					case ConsoleKey.End:
 						caret = text.Length;
-						Redraw(text, caret, prompt, baseRow, width, ref lastRendered);
+						Redraw(text, caret, prompt, width, st);
 						continue;
 
 					case ConsoleKey.Backspace:
@@ -248,7 +257,7 @@ namespace GsACli
 						{
 							text.Remove(caret - 1, 1);
 							caret--;
-							Redraw(text, caret, prompt, baseRow, width, ref lastRendered);
+							Redraw(text, caret, prompt, width, st);
 						}
 						else
 						{
@@ -261,7 +270,7 @@ namespace GsACli
 						{
 							text.Remove(caret, 1);
 						}
-						Redraw(text, caret, prompt, baseRow, width, ref lastRendered);
+						Redraw(text, caret, prompt, width, st);
 						continue;
 
 					case ConsoleKey.Enter:
@@ -275,7 +284,7 @@ namespace GsACli
 					// Plain character (typed or pasted): insert at caret.
 					text.Insert(caret, printable);
 					caret++;
-					Redraw(text, caret, prompt, baseRow, width, ref lastRendered);
+					Redraw(text, caret, prompt, width, st);
 					continue;
 				}
 
@@ -285,77 +294,118 @@ namespace GsACli
 		}
 
 		/// <summary>
-		/// Re-renders prompt + text with minimal writes: the common prefix
-		/// is kept; the cursor is positioned explicitly at the first
-		/// differing column (it may be parked mid-line from an earlier caret
-		/// move); the new suffix is written there first, then any leftover
-		/// old tail beyond it is erased. A pure caret move issues no writes
-		/// at all - just a cursor position. That single-region update keeps
-		/// typing flicker-free and mid-line edits on the right columns.
+		/// Measured screen geometry of the line being edited. Start/End are
+		/// cells conhost reported to us right after our last write, so they
+		/// are always inside the current screen buffer; Written is how many
+		/// cells from the start we have written (it only grows within a
+		/// line's life - shrunken tails stay blanked, never unwritten). All
+		/// cursor math in Redraw derives from these measurements instead of
+		/// predicting rows off a frozen baseRow.
+		/// </summary>
+		private sealed class DrawState
+		{
+			public string LastRendered = string.Empty; // last prompt+text put on screen
+			public int StartRow, StartCol;             // measured cell of the line's first char
+			public int EndRow, EndCol;                 // measured cell one past the last written char
+			public int Written;                        // cells written from the start (>= LastRendered.Length)
+		}
+
+		/// <summary>
+		/// Re-anchors the draw state at the current cursor position (measured),
+		/// used after a WriteLine that moved us to a fresh row: the old line's
+		/// cells are abandoned and the next Redraw starts a new line here.
+		/// </summary>
+		private static void ReAnchor(DrawState st)
+		{
+			st.StartRow = Console.CursorTop;
+			st.StartCol = Console.CursorLeft;
+			st.EndRow = st.StartRow;
+			st.EndCol = st.StartCol;
+			st.Written = 0;
+			st.LastRendered = string.Empty; // force the prompt to be (re)written here
+		}
+
+		/// <summary>
+		/// Re-renders prompt + text and parks the caret, using only measured
+		/// geometry. On a content change: position at the line's measured
+		/// start cell (a real on-screen cell - positioning there can never
+		/// leave the buffer), rewrite the whole line letting conhost wrap
+		/// and scroll naturally, blank any leftover tail, then read back
+		/// where the cursor actually landed and re-derive the start from
+		/// that ground truth. A pure caret move issues no writes at all -
+		/// just a reposition inside the region we last wrote. Every target
+		/// cell therefore lies between two cells conhost itself reported,
+		/// so SetCursorPosition cannot throw even on XP's finite 80x300
+		/// screen buffer where long lines scroll the window.
 		/// </summary>
 		private static void Redraw(
 			StringBuilder text,
 			int caret,
 			string prompt,
-			int baseRow,
 			int width,
-			ref string lastRendered)
+			DrawState st)
 		{
 			string rendered = prompt + text.ToString();
 
-			int common = 0;
-			while (common < lastRendered.Length && common < rendered.Length
-				&& lastRendered[common] == rendered[common])
+			if (rendered != st.LastRendered)
 			{
-				common++;
-			}
+				Console.SetCursorPosition(st.StartCol, st.StartRow);
 
-			bool changed = (common < lastRendered.Length)
-				|| (common < rendered.Length);
-
-			if (changed)
-			{
-				Console.SetCursorPosition(common % width, baseRow + (common / width));
-
-				if (rendered.Length > common)
+				if (rendered.Length > 0)
 				{
-					Console.Write(rendered.Substring(common));
+					Console.Write(rendered);
 				}
-				if (lastRendered.Length > rendered.Length)
+				if (st.Written > rendered.Length)
 				{
-					// Leftover old tail beyond the new suffix: erase it. The
-					// cursor sits exactly where that leftover starts.
-					Console.Write(new string(' ', lastRendered.Length - rendered.Length));
+					// Shrank: blank the leftover tail of what we wrote before.
+					Console.Write(new string(' ', st.Written - rendered.Length));
 				}
 				Console.Out.Flush(); // prompt must not sit in a buffered stream
+
+				int m = Math.Max(st.Written, rendered.Length); // cells now written from the start
+				st.EndRow = Console.CursorTop;                 // measured: one past cell m-1
+				st.EndCol = Console.CursorLeft;
+				long endIdx = (long)st.EndRow * width + st.EndCol;
+				long startIdx = endIdx - m;                     // linear cell stream, wrap included
+				st.StartRow = (int)(startIdx / width);
+				st.StartCol = (int)(startIdx % width);
+				st.Written = m;
+
+				st.LastRendered = rendered;
 			}
 
-			int col = prompt.Length + caret;
-			Console.SetCursorPosition(col % width, baseRow + (col / width));
-
-			lastRendered = rendered;
+			// Park the caret at offset i of the line. The measured end sits
+			// one past cell Written-1, so offset i is (Written - i) cells
+			// before it - always inside the region we just wrote, hence an
+			// in-buffer cell SetCursorPosition will accept.
+			int i = prompt.Length + caret;
+			long endPos = (long)st.EndRow * width + st.EndCol;
+			long target = endPos - (st.Written - i);
+			Console.SetCursorPosition((int)(target % width), (int)(target / width));
 		}
 
 		/// <summary>
-		/// Rings the terminal bell by sending ASCII BEL (0x07) to the
-		/// console stream and flushing it; whether that becomes an audible
-		/// beep or a visual flash is up to the host terminal's settings.
+		/// Rings the terminal bell via Console.Beep (D49: how it rings or
+		/// flashes is up to the host). Deliberately NOT a raw 0x07 byte on
+		/// the output stream: that would be an unaccounted write into the
+		/// editor's cell accounting, and whether XP's conhost consumes a
+		/// cell for it is exactly the kind of assumption we no longer make.
 		/// </summary>
 		private static void Bell()
 		{
-			Console.Out.Write('\u0007');
-			Console.Out.Flush();
+			Console.Beep();
 		}
 
 		/// <summary>
-		/// Terminal probe: width + the row where this line's prompt will
-		/// start. Returns false when either is untrusted, in which case
+		/// Terminal probe: width + the cell where this line's prompt will
+		/// start. Returns false when any of it is untrusted, in which case
 		/// the caller drops to the plain path.
 		/// </summary>
-		private static bool ProbeTerminal(out int width, out int baseRow)
+		private static bool ProbeTerminal(out int width, out int baseRow, out int baseCol)
 		{
 			width = 0;
 			baseRow = 0;
+			baseCol = 0;
 
 			try
 			{
@@ -367,6 +417,11 @@ namespace GsACli
 				width = w;
 				baseRow = Console.CursorTop;
 				if (baseRow < 0)
+				{
+					return false;
+				}
+				baseCol = Console.CursorLeft;
+				if (baseCol < 0)
 				{
 					return false;
 				}
