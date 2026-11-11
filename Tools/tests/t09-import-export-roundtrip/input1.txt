@@ -1,0 +1,4 @@
+EXPORT * TO out.csv
+EXPORT * TO out.csv
+EXPORT * OVERWRITE TO out.csv
+BYE

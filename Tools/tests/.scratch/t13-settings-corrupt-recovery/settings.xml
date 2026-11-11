@@ -1,0 +1,26 @@
+<Settings>
+	<Defaults>
+		<Default id="CODE_METHOD">upc-a</Default> <!--acceptable responses are 'upc-a', 'upc-a-nc' (UPC-A without check digit), or 'rnd4'-->
+		<Default id="NAME_VALIDATION">truncate</Default> <!--what to do if an item name fails validation during IMPORT? acceptable responses are 'reject' or 'truncate'-->
+		<Default id="QTY">0</Default>
+		<Default id="TRACK_MOVEMENT">N</Default>
+		<Default id="REQUIRE_QTY">N</Default>
+		<Default id="REQUIRE_PRICE">N</Default>
+		<Default id="SELL_HOURS">Y</Default>
+		<Default id="SELL_RESTRICTED">Y</Default>
+		<Default id="NO_RETURN">N</Default>
+		<Default id="GIVEAWAY">N</Default>
+		<Default id="TAX1">N</Default>
+		<Default id="TAX2">N</Default>
+		<Default id="TAX3">N</Default>
+		<Default id="TAX4">N</Default>
+		<Default id="PRICE_METHOD">0</Default>
+		<Default id="DCS_METHOD">0</Default>
+	</Defaults>
+
+	<Departments>
+		<Department number="1">BOOKS</Department>
+		<Department number="2">MOVIES</Department>
+		<Department number="3">MUSIC</Department>
+	</Departments>
+</Settings>

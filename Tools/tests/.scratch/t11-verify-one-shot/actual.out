@@ -1,0 +1,19 @@
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+File: t.DAT
+Header OK
+Slots: 10100 (header) == 10100 (calculated from file size)
+Records: 151 in use, 9949 free
+VERIFY OK
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+Database Exception: badA.DAT: 33555392 blocks exceeds the u16 chain pointer ceiling (65535 data blocks); cannot open safely
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+Database Exception: Index was outside the bounds of the array.

@@ -1,0 +1,41 @@
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+No file has been loaded
+
+config> OK, Settings.xml updated (CODE_METHOD=upc-a-nc)
+config> CODE_METHOD=upc-a-nc
+NAME_VALIDATION=truncate
+QTY=0
+TRACK_MOVEMENT=N
+REQUIRE_QTY=N
+REQUIRE_PRICE=N
+SELL_HOURS=Y
+SELL_RESTRICTED=Y
+NO_RETURN=N
+GIVEAWAY=N
+TAX1=N
+TAX2=N
+TAX3=N
+TAX4=N
+PRICE_METHOD=0
+DCS_METHOD=0
+config> Validation Error: CODE_METHOD accepts 'upc-a', 'upc-a-nc', or 'rnd4'.
+config> Exiting!
+EXIT=0
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Loaded t.DAT OK - 151 records in use, 9949 slots free
+gsa [(t.DAT)]> OK, inserted item 10000000000
+gsa [(t.DAT)]> OK, inserted item 10000000001
+gsa [(t.DAT)]> OK, inserted item 100000000007
+gsa [(t.DAT)]> ITEM_CODE    ITEM_NAME  DEPT       SALEPRICECENTS  QTY  MVMT  REQ_QTY  REQ_PRICE  ALL_HOURS  RESTRICTED_HOURS  NO_RETURN  GIVEAWAY  TAX1  TAX2  TAX3  TAX4  PRICE_METHOD  DCS_METHOD
+10000000000  ZERO A     1 (BOOKS)  100             0    N     N        N          Y          Y                 N          N         N     N     N     N     0             0
+gsa [(t.DAT)]> Staged changes discarded.
+Exiting!
+EXIT=0

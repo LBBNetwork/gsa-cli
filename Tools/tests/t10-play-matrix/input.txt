@@ -1,0 +1,6 @@
+PLAY s_ok.scr LOUD
+PLAY s_nocommit.scr
+PLAY s_unknown.scr
+PLAY s_bye.scr
+PLAY s_fail.scr
+BYE

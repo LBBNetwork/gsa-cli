@@ -1,0 +1,3 @@
+CREATE CSV mycsv.csv
+CREATE CSV mycsv.csv
+BYE

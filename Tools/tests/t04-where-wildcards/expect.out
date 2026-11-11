@@ -1,0 +1,117 @@
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Loaded t.DAT OK - 151 records in use, 9949 slots free
+gsa [(t.DAT)]> ITEM_CODE  ITEM_NAME  DEPT       SALEPRICECENTS  QTY  MVMT  REQ_QTY  REQ_PRICE  ALL_HOURS  RESTRICTED_HOURS  NO_RETURN  GIVEAWAY  TAX1  TAX2  TAX3  TAX4  PRICE_METHOD  DCS_METHOD
+1009       SCHISM     1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+gsa [(t.DAT)]> ITEM_CODE  ITEM_NAME  DEPT       SALEPRICECENTS  QTY  MVMT  REQ_QTY  REQ_PRICE  ALL_HOURS  RESTRICTED_HOURS  NO_RETURN  GIVEAWAY  TAX1  TAX2  TAX3  TAX4  PRICE_METHOD  DCS_METHOD
+1009       SCHISM     1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+gsa [(t.DAT)]> ITEM_CODE               ITEM_NAME           DEPT       SALEPRICECENTS  QTY  MVMT  REQ_QTY  REQ_PRICE  ALL_HOURS  RESTRICTED_HOURS  NO_RETURN  GIVEAWAY  TAX1  TAX2  TAX3  TAX4  PRICE_METHOD  DCS_METHOD
+1004                    MYST URU CDROM      1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1005                    MYST III EXILE      1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1006                    MYST IV REVEL       1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1007                    MYST V EO AGES      1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1008                    BEYOND ATLANTIS     1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1009                    SCHISM              1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1010                    RIDL OF THE SPHINX  1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1011                    RDL SPHNX 2 OM STN  1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1018                    LINKS 386 CDROM     1 (BOOKS)  100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1019                    EXCEL 2013 PRDKEY   1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1020                    EDITRS TLKIT 6      1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1021                    DELTACAD WINDOWS    1 (BOOKS)  100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1024                    ES3 MRWWND XBOX     1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1000000000000000000111  SAMPLE  SKU #  111  1 (BOOKS)  500             0    Y     N        N          Y          N                 N          N         Y     N     N     N     0             0
+4000                    VVTR PIZZA MOUSE    1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+4001                    JEWEL MOUSE         4          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+3000000000000000000999  SAMPLE NON/MDS 999  7          500             0    Y     N        N          Y          N                 N          N         Y     N     N     N     0             0
+5000                    2 WIRE TELPHN CBL   5          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+5001                    2400BPS ISA MODEM   5          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+5002                    CRUCIAL 2GBDDR2 KT  5          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+5003                    DSDD 3.5 DKT DRIVE  5          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+5004                    INTEL P3 550MHZ     5          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+5005                    LKG USB A TO B CBL  5          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+5006                    MITSU 018ZAM DKDRV  5          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+5010                    T-L USB2 ETHERNET   5          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+5013                    USR ISA MODEM       5          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+5014                    GIANT AIRPOD        5          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+5017                    SONY PS2 BRDBND     5          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+5018                    SOLTECH 1GBPS SFP   5          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+16000                   13W3 TO VGA ADPTR   16         500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6002                    3M DB15M CRIMP      6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+16002                   CASIO WATCH BAND    16         100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6003                    AIM DB9F CRIMP      6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6004                    AIM DB9M CRIMP      6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6006                    DB15M CRIMP         6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6007                    LINR GRN INC 3060   6          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+16009                   DUST GEL            16         500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+16011                   QVS DB25 NULLMDM    16         100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6011                    LINR WHT NEO 1030   6          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6012                    LINR YLW INC 2803   6          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+16013                   GE CLRID TLPHONE    16         500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+16012                   QVS DB9 NULMODEM    16         100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6013                    LINR YLW NEO 2096   6          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6014                    LINR RED NEO 2150   6          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+16015                   MI:3 HD-DVD         16         100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6015                    LINR BLU NEON LAMP  6          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+16014                   FUKEEN THRPLW CVR   16         200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6016                    PHLM 20POS CRIMP    6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+16017                   TRMNTR 3 HD-DVD     16         100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6017                    PHLM 26POS CRIMP    6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+16016                   KING KONG HD-DVD    16         100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6018                    PHLM 40POS CRIMP    6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6019                    PHLM 50POS CRIMP    6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+16018                   GRNDSTRM BDG-TONE   16         100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6020                    PHLM DB25F CRIMP    6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6021                    PHLM DB25M CRIMP    6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6022                    PHLM GN NEO 112070  6          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6023                    PHLM GRN 11125      6          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6024                    PHLM GRN 112044     6          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6025                    PHLM RD NEO 11122   6          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6026                    PHLM RD NEO 112062  6          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6027                    PHLM RED NEON       6          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6029                    PHLM YL NEO 112064  6          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6031                    RASPI GPIO BRKOUT   6          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6032                    SOLDER SUCKER       6          300             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6034                    120PCS HEATSHRNK    6          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6039                    GC 3419 SWITCH      6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6040                    GC 35961 SWITCH     6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6041                    PHILM 301010 SW     6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6042                    BULK WIRE 25CND     6          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6043                    BULK WIRE 10CND     6          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6044                    BULK WIRE 20CND     6          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6045                    BULK WIRE 40CND     6          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6046                    BULK WIRE 34CND     6          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6047                    BULK WIRE 50CND     6          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6048                    PHILM 704216 CRMP   6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6049                    PHILM 704210 CRIMP  6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6050                    PHILM 704220 CRMP   6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6051                    PHILM 704226 CRMP   6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6052                    PHILM 704234 CRMP   6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6053                    PHILM 704250 CRMP   6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6054                    PHILM 301008 SW     6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6055                    PHILM 301006 SW     6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+6056                    GC 35964 SW         6          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+8000                    3174 BADGE          8          300             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+8001                    MISC PROMO BUTTON   8          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+8002                    PINBALL SACK        8          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+9000                    IOM ZIP 100 DSK     9          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+9001                    MAXL ZIP 100 DSK    9          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+9002                    SNY HD3.5 DKT 10PK  9          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+9003                    SONY PDV184D TAPE   9          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+9004                    SONY PFD50DLA DISC  9          200             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+9005                    VERB ZIP 100 DSK    9          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+9006                    IMA 120 SUPERDISK   9          100             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+9007                    VERB 4GB SDCARD     9          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+9008                    OPUS DSDD HS 5.25"  9          500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+gsa [(t.DAT)]> ITEM_CODE  ITEM_NAME  DEPT       SALEPRICECENTS  QTY  MVMT  REQ_QTY  REQ_PRICE  ALL_HOURS  RESTRICTED_HOURS  NO_RETURN  GIVEAWAY  TAX1  TAX2  TAX3  TAX4  PRICE_METHOD  DCS_METHOD
+1009       SCHISM     1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+gsa [(t.DAT)]> ITEM_CODE  ITEM_NAME  DEPT       SALEPRICECENTS  QTY  MVMT  REQ_QTY  REQ_PRICE  ALL_HOURS  RESTRICTED_HOURS  NO_RETURN  GIVEAWAY  TAX1  TAX2  TAX3  TAX4  PRICE_METHOD  DCS_METHOD
+1009       SCHISM     1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+gsa [(t.DAT)]> ITEM_CODE  ITEM_NAME   DEPT       SALEPRICECENTS  QTY  MVMT  REQ_QTY  REQ_PRICE  ALL_HOURS  RESTRICTED_HOURS  NO_RETURN  GIVEAWAY  TAX1  TAX2  TAX3  TAX4  PRICE_METHOD  DCS_METHOD
+1001       MOTO RACER  1 (BOOKS)  1000            0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+gsa [(t.DAT)]> ITEM_CODE  ITEM_NAME   DEPT       SALEPRICECENTS  QTY  MVMT  REQ_QTY  REQ_PRICE  ALL_HOURS  RESTRICTED_HOURS  NO_RETURN  GIVEAWAY  TAX1  TAX2  TAX3  TAX4  PRICE_METHOD  DCS_METHOD
+1001       MOTO RACER  1 (BOOKS)  1000            0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+gsa [(t.DAT)]> No matching records.
+gsa [(t.DAT)]> Exiting!

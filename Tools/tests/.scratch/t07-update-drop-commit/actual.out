@@ -1,0 +1,20 @@
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Loaded t.DAT OK - 151 records in use, 9949 slots free
+gsa [(t.DAT)]> OK, updated item 1009
+gsa [(t.DAT)]> ITEM_CODE  ITEM_NAME  DEPT       SALEPRICECENTS  QTY  MVMT  REQ_QTY  REQ_PRICE  ALL_HOURS  RESTRICTED_HOURS  NO_RETURN  GIVEAWAY  TAX1  TAX2  TAX3  TAX4  PRICE_METHOD  DCS_METHOD
+1009       SCHISM     1 (BOOKS)  600             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+gsa [(t.DAT)]> OK, deleted 1 record.
+gsa [(t.DAT)]> OK, changes committed to disk!
+gsa [(t.DAT)]> Exiting!
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Loaded t.DAT OK - 150 records in use, 9950 slots free
+gsa [(t.DAT)]> No matching records.
+gsa [(t.DAT)]> Exiting!

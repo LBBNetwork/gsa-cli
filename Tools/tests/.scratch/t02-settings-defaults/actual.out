@@ -1,0 +1,27 @@
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+No file has been loaded
+
+config> OK, Settings.xml updated (QTY=5)
+config> OK, Settings.xml updated (TAX1=Y)
+config> OK, Settings.xml updated (SELL_HOURS=N)
+config> CODE_METHOD=upc-a
+NAME_VALIDATION=truncate
+QTY=5
+TRACK_MOVEMENT=N
+REQUIRE_QTY=N
+REQUIRE_PRICE=N
+SELL_HOURS=N
+SELL_RESTRICTED=Y
+NO_RETURN=N
+GIVEAWAY=N
+TAX1=Y
+TAX2=N
+TAX3=N
+TAX4=N
+PRICE_METHOD=0
+DCS_METHOD=0
+config> Exiting!

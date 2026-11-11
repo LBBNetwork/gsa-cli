@@ -1,0 +1,4 @@
+DROP 1009
+COMMIT
+IMPORT out.csv
+BYE

@@ -1,0 +1,18 @@
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Loaded t.DAT OK - 151 records in use, 9949 slots free
+gsa [(t.DAT)]> 151
+gsa [(t.DAT)]> ITEM_CODE  ITEM_NAME   DEPT       SALEPRICECENTS  QTY  MVMT  REQ_QTY  REQ_PRICE  ALL_HOURS  RESTRICTED_HOURS  NO_RETURN  GIVEAWAY  TAX1  TAX2  TAX3  TAX4  PRICE_METHOD  DCS_METHOD
+1001       MOTO RACER  1 (BOOKS)  1000            0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+gsa [(t.DAT)]> ITEM_CODE  ITEM_NAME           DEPT       SALEPRICECENTS  QTY  MVMT  REQ_QTY  REQ_PRICE  ALL_HOURS  RESTRICTED_HOURS  NO_RETURN  GIVEAWAY  TAX1  TAX2  TAX3  TAX4  PRICE_METHOD  DCS_METHOD
+1004       MYST URU CDROM      1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1005       MYST III EXILE      1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1006       MYST IV REVEL       1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1007       MYST V EO AGES      1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1008       BEYOND ATLANTIS     1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1009       SCHISM              1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+1010       RIDL OF THE SPHINX  1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+gsa [(t.DAT)]> Exiting!

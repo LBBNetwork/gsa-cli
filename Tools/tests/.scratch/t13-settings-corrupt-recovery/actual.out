@@ -1,0 +1,25 @@
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+No file has been loaded
+
+Settings Error: Settings.xml was corrupt - renamed to H:\llm\gsa-cli\Tools\tests\.scratch\t13-settings-corrupt-recovery\settings.xml.corrupt-2026-11-11; a fresh defaults file was created.
+config> CODE_METHOD=upc-a
+NAME_VALIDATION=truncate
+QTY=0
+TRACK_MOVEMENT=N
+REQUIRE_QTY=N
+REQUIRE_PRICE=N
+SELL_HOURS=Y
+SELL_RESTRICTED=Y
+NO_RETURN=N
+GIVEAWAY=N
+TAX1=N
+TAX2=N
+TAX3=N
+TAX4=N
+PRICE_METHOD=0
+DCS_METHOD=0
+config> Exiting!

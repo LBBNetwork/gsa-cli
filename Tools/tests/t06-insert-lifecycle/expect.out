@@ -1,0 +1,19 @@
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Loaded t.DAT OK - 151 records in use, 9949 slots free
+gsa [(t.DAT)]> OK, inserted item 9777
+gsa [(t.DAT)]> Validation Error: ITEM_CODE 1001 already exists. Use UPDATE 1001 SET ... to modify it, or choose a different code.
+gsa [(t.DAT)]> Validation Error: SALEPRICECENTS takes integer cents. Did you mean 499?
+gsa [(t.DAT)]> Validation Error: You are missing a required parameter.
+gsa [(t.DAT)]> The database has pending commits. COMMIT your changes first or specify QUIT / BYE FORCE; to exit anyway.
+gsa [(t.DAT)]> gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Loaded t.DAT OK - 151 records in use, 9949 slots free
+gsa [(t.DAT)]> No matching records.
+gsa [(t.DAT)]> Exiting!

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Settings>
+  <Defaults>
+    <Default id="CODE_METHOD">rnd4</Default>
+  </Defaults>
+</Settings>

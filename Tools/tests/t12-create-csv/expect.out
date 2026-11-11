@@ -1,0 +1,21 @@
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+No file has been loaded
+
+config> OK, created template.csv (190 bytes)
+config> Command Error: template.csv already exists. Delete it first.
+config> Exiting!
+BYTE-COMPARE OK (no-path)
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Loaded t.DAT OK - 151 records in use, 9949 slots free
+gsa [(t.DAT)]> OK, created mycsv.csv (190 bytes)
+gsa [(t.DAT)]> Command Error: mycsv.csv already exists. Delete it first.
+gsa [(t.DAT)]> Exiting!
+BYTE-COMPARE OK (db-mode)

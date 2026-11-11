@@ -1,0 +1,54 @@
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Loaded t.DAT OK - 151 records in use, 9949 slots free
+gsa [(t.DAT)]> ITEM_CODE
+69
+555
+gsa [(t.DAT)]> ITEM_CODE               ITEM_NAME
+69                      nice
+2000000000010b100d1000  test1234
+gsa [(t.DAT)]> ITEM_CODE               ITEM_NAME           SALEPRICECENTS
+6224892759              FFVII REBIRTH PS5   6999
+101337                  VISUAL STUDIO       1337
+1000                    ALONE IN DARK 2     1000
+1001                    MOTO RACER          1000
+1003                    S&S PRINC DIANA     1000
+1012                    DECENT II           1000
+1013                    DECENT 3            1000
+1014                    SIERRA WINNERS      1000
+1015                    ARMORED MOON        1000
+1016                    DARKLANDS           1000
+1017                    ALONE IN THE DARK   1000
+1022                    MCHASLT XBOX        1000
+1023                    ES4 OBLVN XBOX360   1000
+1025                    MCASLT 2 LNWLF XBX  1000
+5112292278              IMDKT 3.5 NEON MAC  999
+10123                   LIGHT BULB          599
+1004                    MYST URU CDROM      500
+1005                    MYST III EXILE      500
+1006                    MYST IV REVEL       500
+1007                    MYST V EO AGES      500
+1008                    BEYOND ATLANTIS     500
+1009                    SCHISM              500
+1010                    RIDL OF THE SPHINX  500
+1011                    RDL SPHNX 2 OM STN  500
+1019                    EXCEL 2013 PRDKEY   500
+1020                    EDITRS TLKIT 6      500
+1024                    ES3 MRWWND XBOX     500
+1000000000000000000111  SAMPLE  SKU #  111  500
+4000                    VVTR PIZZA MOUSE    500
+1018                    LINKS 386 CDROM     100
+1021                    DELTACAD WINDOWS    100
+69                      nice                0
+2000000000010b100d1000  test1234            0
+gsa [(t.DAT)]> ITEM_CODE
+69
+555
+gsa [(t.DAT)]> Command Error: ORDER BY takes a sort key list in parentheses.
+gsa [(t.DAT)]> Command Error: ORDER BY takes a sort key list in parentheses.
+gsa [(t.DAT)]> Command Error: unknown column 'BOGUS'.
+gsa [(t.DAT)]> Command Error: COUNT takes no ORDER BY clause.
+gsa [(t.DAT)]> Exiting!

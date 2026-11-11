@@ -1,0 +1,45 @@
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Loaded t.DAT OK - 151 records in use, 9949 slots free
+gsa [(t.DAT)]> OK, playing 's_ok.scr'...
+
+INSERT VALUES ('9600','PLAY ITEM','1','100')
+OK, inserted item 9600
+
+COMMIT
+OK, changes committed to disk!
+
+
+Played 's_ok.scr' successfully
+gsa [(t.DAT)]> Script Error: 's_nocommit.scr' line 1: the last line must be COMMIT.
+gsa [(t.DAT)]> Script Error: 's_unknown.scr' line 1: unknown command 'FROBNICATE'.
+gsa [(t.DAT)]> Script Error: 's_bye.scr' line 1: BYE/QUIT is not allowed in PLAY scripts.
+gsa [(t.DAT)]> Script Error: 's_fail.scr' line 2: Validation Error: ITEM_CODE 9602 already exists. Use UPDATE 9602 SET ... to modify it, or choose a different code.
+Staged changes rolled back.
+gsa [(t.DAT)]> Exiting!
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+Loaded t3.DAT OK - 151 records in use, 9949 slots free
+OK, played 's_ok.scr' successfully
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+Loaded t4.DAT OK - 151 records in use, 9949 slots free
+Script Error: 's_fail.scr' line 2: Validation Error: ITEM_CODE 9602 already exists. Use UPDATE 9602 SET ... to modify it, or choose a different code.
+Staged changes rolled back.
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Loaded t.DAT OK - 152 records in use, 9948 slots free
+gsa [(t.DAT)]> ITEM_CODE  ITEM_NAME  DEPT       SALEPRICECENTS  QTY  MVMT  REQ_QTY  REQ_PRICE  ALL_HOURS  RESTRICTED_HOURS  NO_RETURN  GIVEAWAY  TAX1  TAX2  TAX3  TAX4  PRICE_METHOD  DCS_METHOD
+9600       PLAY ITEM  1 (BOOKS)  100             0    N     N        N          Y          Y                 N          N         N     N     N     N     0             0
+gsa [(t.DAT)]> No matching records.
+gsa [(t.DAT)]> Exiting!

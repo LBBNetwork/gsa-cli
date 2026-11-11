@@ -1,0 +1,58 @@
+usage: bcgen <input.csv> <output.csv> [--seed N]
+EXIT=0
+bcgen: Usage Error: expected exactly two file arguments.
+usage: bcgen <input.csv> <output.csv> [--seed N]
+EXIT=1
+bcgen: Usage Error: expected exactly two file arguments.
+usage: bcgen <input.csv> <output.csv> [--seed N]
+EXIT=1
+bcgen: Usage Error: output must differ from input (no in-place editing).
+EXIT=1
+bcgen: Usage Error: --seed takes a non-negative integer (got '-5').
+EXIT=1
+bcgen: Usage Error: unknown option '--frobnicate'.
+EXIT=1
+bcgen: wrote out-mixed.csv - rows=7, generated=6 (rnd4=1, upc-a=4, upc-a-nc=1)
+EXIT=0
+BOM OK
+CRLF OK (lines=8)
+NO-TRAILING-NEWLINE OK
+ITEM_CODE,ITEM_NAME,SALEPRICECENTS
+271405798933,Alpha,100
+668994300096,Beta,200
+8291,Gamma,300
+684010621501,Delta,400
+27140579893,Eta,500
+12345,Epsilon,600
+628180179400,Zeta,700
+DETERMINISM OK
+SEED VARIATION OK
+bcgen: Input Error: Could not find file 'H:\llm\gsa-cli\Tools\tests\.scratch\t16-bcgen\nosuchfile.csv'.
+EXIT=1
+NO-PARTIAL OK (missing input)
+bcgen: Input Error: the first column must be named ITEM_CODE (found 'CODE').
+EXIT=1
+NO-PARTIAL OK (bad header)
+bcgen: wrote out-lowerhdr.csv - rows=1, generated=1 (rnd4=0, upc-a=1, upc-a-nc=0)
+EXIT=0
+item_code,name
+625260014613,x
+bcgen: Input Error: line 2: expected 2 fields, found 3
+EXIT=1
+NO-PARTIAL OK (ragged)
+bcgen: wrote out-set.csv - rows=4, generated=3 (rnd4=2, upc-a=1, upc-a-nc=0)
+EXIT=0
+ITEM_CODE,NAME
+4804,Blank
+6346,Zero
+729998398943,ExplicitUpca
+12345,Keep
+bcgen: wrote out-nc.csv - rows=3, generated=3 (rnd4=0, upc-a=1, upc-a-nc=2)
+EXIT=0
+ITEM_CODE,NAME
+72999839894,Blank
+43069399760,Zero
+729998398943,ExplicitUpca
+bcgen: Settings Error: Malformed XML: Data at the root level is invalid. Line 1, position 1.
+EXIT=1
+NO-PARTIAL OK (corrupt settings)

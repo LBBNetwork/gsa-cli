@@ -1,0 +1,13 @@
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Loaded t.DAT OK - 151 records in use, 9949 slots free
+gsa [(t.DAT)]> Command Error: unknown command 'COUNT(*)'.
+gsa [(t.DAT)]> Command Error: unknown command 'FROBNICATE'.
+gsa [(t.DAT)]> SELECT takes a target (*, code, or range), optionally WHERE, VALUES, and ORDER BY.
+gsa [(t.DAT)]> Invalid command for database mode. Use SHOW CONFIG to view settings.
+gsa [(t.DAT)]> Command Error: A database is already loaded (t.DAT). UNLOAD first (UNLOAD FORCE discards staged changes).
+gsa [(t.DAT)]> Command Error: INSERT takes a VALUES clause.
+gsa [(t.DAT)]> Exiting!

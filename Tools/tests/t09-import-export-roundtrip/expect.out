@@ -1,0 +1,57 @@
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Loaded t.DAT OK - 151 records in use, 9949 slots free
+gsa [(t.DAT)]> Progress: 100%
+OK, exported 151 records to 'out.csv'
+gsa [(t.DAT)]> Command Error: out.csv already exists. Re-run with OVERWRITE to replace it.
+gsa [(t.DAT)]> Progress: 100%
+OK, exported 151 records to 'out.csv'
+gsa [(t.DAT)]> Exiting!
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Loaded t2.DAT OK - 151 records in use, 9949 slots free
+gsa [(t2.DAT)]> OK, deleted 1 record.
+gsa [(t2.DAT)]> OK, changes committed to disk!
+gsa [(t2.DAT)]> Progress: 100%
+OK, imported 1 records, updated 126 records, rejected the following ITEM_CODEs:
+- 1003 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 1000000000000000000444 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 1000000000000000000111 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 2000000000010b100d1000 - The required parameter ITEM_CODE contains invalid characters (numeric digits only)
+- 5112292278 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 1000000000000000000999 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 3000000000000000000999 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 5003 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 5007 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 5008 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 5009 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 5010 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 5011 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 5012 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 5019 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 1000000000000000000222 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 16015 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 16017 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 16016 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 16018 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 200000000000000009b9d9 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 1000000000000000000333 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 9002 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+- 9008 - ITEM_NAME contains invalid characters (alphanumeric and spaces only).
+OK, changes committed to disk!
+gsa [(t2.DAT)]> Exiting!
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Loaded t2.DAT OK - 151 records in use, 9949 slots free
+gsa [(t2.DAT)]> ITEM_CODE  ITEM_NAME  DEPT       SALEPRICECENTS  QTY  MVMT  REQ_QTY  REQ_PRICE  ALL_HOURS  RESTRICTED_HOURS  NO_RETURN  GIVEAWAY  TAX1  TAX2  TAX3  TAX4  PRICE_METHOD  DCS_METHOD
+1009       SCHISM     1 (BOOKS)  500             0    N     N        N          Y          N                 N          N         N     N     N     N     0             0
+gsa [(t2.DAT)]> Exiting!

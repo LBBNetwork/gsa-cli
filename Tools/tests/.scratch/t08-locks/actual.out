@@ -1,0 +1,36 @@
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+Note: another gsa-cli instance is running (pid 24636); settings editing is disabled for this session.
+t.DAT is already in use by process 24636.
+
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+No file has been loaded
+
+Note: another gsa-cli instance is running (pid 24636); settings editing is disabled for this session.
+config> t.DAT is in use by live gsa-cli process 24636; the override was refused.
+config> 
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+No file has been loaded
+
+config> t.DAT is already in use by process 24636.
+config> 
+gsa-cli command line utility for EALITEMR.DAT
+Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
+With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
+
+No file has been loaded
+
+config> Loaded t.DAT OK - 151 records in use, 9949 slots free
+gsa [(t.DAT)]> 
