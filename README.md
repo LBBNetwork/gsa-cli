@@ -108,12 +108,7 @@ case-insensitive. Quoted values may contain spaces (`ITEM_NAME='MOTO RACER'`).
 
 ## Documentation
 
-- [SPECIFICATION.md](SPECIFICATION.md) — the normative command reference and
-  behavior contract.
-- [DECISIONS.md](DECISIONS.md) — the decision log behind every behavior above.
-- [PROJECT.md](PROJECT.md) — phase plan, status, and delivery checklist.
-- [CSVToolkit/CSV-DECISIONS.md](CSVToolkit/CSV-DECISIONS.md) — the CSV library
-  contract (streaming core, determinism, format).
+- [DOCUMENTATION.md](DOCUMENTATION.md) — manual for configuration and command syntax
 
 ## Testing
 
