@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- gsa-cli MSBuild project (Windows msbuild / Mono xbuild path).
+     Single self-contained EXE: the three libraries are compiled in from
+     source here, whereas build.bat/build.sh emit them as companion DLLs
+     (bin\EalItemr.dll, bin\Xml2.dll, bin\CSVToolkit.dll) and link against
+     them. Both paths must stay in sync with the file lists below.
+     The library AssemblyInfo.cs files are deliberately excluded - their
+     [assembly: ...] attributes would collide inside one assembly (the
+     gsa-cli identity comes from GsACli's own sources). -->
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>GsACli</RootNamespace>
+    <AssemblyName>gsa-cli</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <StartupObject>GsACli.Program</StartupObject>
+    <OutputPath>bin\$(Configuration)</OutputPath>
+    <!-- D62: embed the application icon (mirrors build.bat /win32icon). -->
+    <ApplicationIcon>Aha-Soft-Large-Business-Cash-register.ico</ApplicationIcon>
+  </PropertyGroup>
+  <!-- D54 post-build patch compiler search, same order as build.bat. The
+       v2.0 csc emits the EXE without IMAGE_FILE_LARGE_ADDRESS_AWARE and this
+       target set does not wire LargeAddressAware into the Csc task (verified:
+       zero references in Microsoft.CSharp.targets), so we patch it exactly
+       like build.bat does with Tools/SetLargeAddressAware.cs. -->
+  <PropertyGroup>
+    <CscV2 Condition="Exists('$(WINDIR)\Microsoft.NET\Framework64\v2.0.50727\csc.exe')">$(WINDIR)\Microsoft.NET\Framework64\v2.0.50727\csc.exe</CscV2>
+    <CscV2 Condition="'$(CscV2)' == '' and Exists('$(WINDIR)\Microsoft.NET\Framework\v2.0.50727\csc.exe')">$(WINDIR)\Microsoft.NET\Framework\v2.0.50727\csc.exe</CscV2>
+    <CscV2 Condition="'$(CscV2)' == ''">csc</CscV2>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- main application: GsACli -->
+    <Compile Include="GsACli\Program.cs" />
+    <Compile Include="GsACli\Abort.cs" />
+    <Compile Include="GsACli\Repl.cs" />
+    <Compile Include="GsACli\Session.cs" />
+    <Compile Include="GsACli\CommandLex.cs" />
+    <Compile Include="GsACli\LineEditor.cs" />
+    <Compile Include="GsACli\DatabaseLock.cs" />
+    <Compile Include="GsACli\InstanceGuard.cs" />
+    <Compile Include="GsACli\Settings.cs" />
+    <Compile Include="GsACli\SettingsBootstrap.cs" />
+    <Compile Include="GsACli\CsvTemplate.cs" />
+    <!-- main application: Bridge (seams + adapters) -->
+    <Compile Include="Bridge\IRecordEngine.cs" />
+    <Compile Include="Bridge\EalItemrEngine.cs" />
+    <Compile Include="Bridge\ICsvEngine.cs" />
+    <Compile Include="Bridge\CsvEngine.cs" />
+    <!-- library: EalItemr (GSA keyed-file record format) -->
+    <Compile Include="EalItemr\EalItemr.cs" />
+    <!-- library: Xml2 (GSAToolkit-style XML settings files; AssemblyInfo excluded) -->
+    <Compile Include="Xml2\SettingPaths.cs" />
+    <Compile Include="Xml2\XmlNames.cs" />
+    <Compile Include="Xml2\XmlSettings.cs" />
+    <Compile Include="Xml2\XmlSettingsException.cs" />
+    <Compile Include="Xml2\XmlSettingsSnapshot.cs" />
+    <Compile Include="Xml2\XmlTreeNode.cs" />
+    <Compile Include="Xml2\XmlTreeParser.cs" />
+    <Compile Include="Xml2\XmlTreeWriter.cs" />
+    <!-- library: CSVToolkit (general-purpose streaming CSV; AssemblyInfo excluded) -->
+    <Compile Include="CSVToolkit\AsyncResult.cs" />
+    <Compile Include="CSVToolkit\Csv.cs" />
+    <Compile Include="CSVToolkit\CsvCore.cs" />
+    <Compile Include="CSVToolkit\CsvException.cs" />
+    <Compile Include="CSVToolkit\CsvReader.cs" />
+    <Compile Include="CSVToolkit\CsvRow.cs" />
+    <Compile Include="CSVToolkit\CsvWriter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Embedded build resources (D40 settings template, D39 CSV template). -->
+    <EmbeddedResource Include="settings.xml" />
+    <EmbeddedResource Include="template.csv" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
+  <!-- D54: flip IMAGE_FILE_LARGE_ADDRESS_AWARE on the EXE (no-op effect off
+       32-bit PAE Windows, so skip it entirely where WINDIR is absent). The
+       tool is idempotent and self-verifying. -->
+  <Target Name="SetLargeAddressAware" AfterTargets="Build" Condition="'$(OS)' == 'Windows_NT'">
+    <Exec Command="&quot;$(CscV2)&quot; /nologo /target:exe /out:&quot;$(OutputPath)SetLA.tmp.exe&quot; &quot;Tools\SetLargeAddressAware.cs&quot;" />
+    <Exec Command="&quot;$(OutputPath)SetLA.tmp.exe&quot; &quot;$(OutputPath)gsa-cli.exe&quot;" />
+    <Delete Files="$(OutputPath)SetLA.tmp.exe" />
+  </Target>
+</Project>
