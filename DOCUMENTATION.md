@@ -14,6 +14,7 @@ Run `gsa-cli.exe` from its directory with no arguments to start in config mode. 
 gsa-cli command line utility for EALITEMR.DAT
 Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
 With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
 
 No file has been loaded
 
@@ -28,11 +29,11 @@ The full option table, exactly as `gsa-cli` prints it:
 
 ```
 Usage:
-  gsa-cli [DB.DAT] -import F   import a CSV (Phase 5)
-  gsa-cli [DB.DAT] -play S      run a play script (Phase 5)
-  gsa-cli -verify <DB.DAT>     verify database integrity (one-shot)
-  gsa-cli                    - interactive config mode
-  gsa-cli <DB.DAT>             - interactive, database preloaded
+  gsa-cli [DB.DAT] -import F  import a CSV
+  gsa-cli [DB.DAT] -play S    run a play script
+  gsa-cli -verify <DB.DAT>    verify database integrity (one-shot)
+  gsa-cli                     interactive config mode
+  gsa-cli <DB.DAT>            interactive, database preloaded
 ```
 
 - `gsa-cli` — starts the interactive session in config mode. This is where you manage settings, list databases, and load a file for editing.
@@ -48,6 +49,7 @@ C:\> gsa-cli test.dat
 gsa-cli command line utility for EALITEMR.DAT
 Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
 With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
 
 Loaded test.dat OK - 8 records in use, 10042 slots free
 gsa [(test.dat)]> 
@@ -284,7 +286,7 @@ Command Error: big.dat already exists. Delete it first.
 # DATABASE Commands - Read Only
 
 SELECT;
-The SELECT command shows the operator a list of records as an aligned table. It requires one argument, which can be `*` for all records, a single item code, or a range of item codes (`400-500`, inclusive). It can also take a WHERE modifier so the operator can select matching patterns — comparisons are case-insensitive and support `?` (one character) and `*` (any run) wildcards, with AND, OR, and parentheses for compound conditions. It can also take a VALUES modifier listing which columns to display; if no VALUES modifier is provided, SELECT shows all available columns in the database file, and records whose PRICE_METHOD is 2 or 3 additionally show SALEPRICE2.
+The SELECT command shows the operator a list of records as an aligned table. It requires one argument, which can be `*` for all records, a single item code, or a range of item codes (`400-500`, inclusive). It can also take a WHERE modifier so the operator can select matching patterns — comparisons are case-insensitive and support `?` (one character) and `*` (any run) wildcards, with AND, OR, and parentheses for compound conditions. It can also take a VALUES modifier listing which columns to display; if no VALUES modifier is provided, SELECT shows all available columns in the database file, and records whose PRICE_METHOD is 2 or 3 additionally show SALEPRICE2. Finally it can take an ORDER BY modifier — `ORDER BY (<column> [ASC|DESC], ...)` with parentheses required, direction defaulting to ASC — which sorts the selected set for presentation only; stored record order in the database file is never changed (Decision 67).
 
 Example 1 - All records, all columns:
 ```
@@ -324,6 +326,15 @@ Example 5 - WHERE on ITEM_CODE is rejected (use the target form):
 gsa [(test.dat)]> SELECT * WHERE ITEM_CODE='100'
 Validation Error: WHERE on ITEM_CODE is not supported - use the item code as the command target instead (e.g. SELECT 100 rather than SELECT * WHERE ITEM_CODE='100').
 ```
+
+Example 6 - ORDER BY sorts the result for display only (Decision 67):
+```
+gsa [(GSA EALITEMR.DAT)]> SELECT 1-999 VALUES (ITEM_CODE, ITEM_NAME) ORDER BY (SALEPRICECENTS DESC)
+ITEM_CODE  ITEM_NAME
+555        SAMPLE ITEM 555
+69         nice
+```
+The two rows appear in descending price order (10000 before 0); without ORDER BY they would print in database scan order (`69` first). An unknown sort column is a command error (`Command Error: unknown column 'X'.`), and `COUNT` rejects the clause entirely (`Command Error: COUNT takes no ORDER BY clause.`).
 
 A selection that matches nothing is not an error — it prints `No matching records.` and returns you to the prompt. Note that WHERE predicates match record *values* (names, departments, prices, flags); to pick a specific code use the target form (`SELECT 100`) rather than a WHERE clause on ITEM_CODE — the tool rejects a WHERE predicate on ITEM_CODE with the validation error above, since the code is the record key and belongs in the target. This applies to every command that takes a target plus WHERE (SELECT, COUNT, UPDATE, DROP, EXPORT); IMPORT's optional WHERE filter still accepts ITEM_CODE, because there it filters CSV *rows* of a larger file rather than selecting records.
 
@@ -370,7 +381,7 @@ Staged changes: 1 (not yet committed - run COMMIT to persist)
 # DATABASE Commands - Write Operations
 
 INSERT;
-The INSERT command adds a new item record to the database. It requires four values — ITEM_CODE, ITEM_NAME, DEPT, and SALEPRICECENTS — given either positionally as `VALUES (code, "name", dept, cents)` or by name with an INTO clause listing any subset of the columns you want to set; omitted columns take their Settings.xml defaults. If you specify optional parameters positionally, all parameters must be specified — a partial positional list is rejected in favor of building a custom query string. The item code may also be the keyword `rnd4` or `upc-a`, in which case gsa-cli generates a free code for you. Code 0 is not a usable item code: if you supply it, gsa-cli generates a free code using the CODE_METHOD setting and stores the record under that code instead — the success message reports the actual code used.
+The INSERT command adds a new item record to the database. It requires four values — ITEM_CODE, ITEM_NAME, DEPT, and SALEPRICECENTS — given either positionally as `VALUES (code, "name", dept, cents)` or by name with an INTO clause listing any subset of the columns you want to set; omitted columns take their Settings.xml defaults. If you specify optional parameters positionally, all parameters must be specified — a partial positional list is rejected in favor of building a custom query string. The item code may also be the keyword `rnd4`, `upc-a`, or `upc-a-nc`, in which case gsa-cli generates a free code for you — `upc-a-nc` is a UPC-A without its check digit (an 11-digit base), for label software that rejects check digits. Code 0 is not a usable item code: if you supply it, gsa-cli generates a free code using the CODE_METHOD setting and stores the record under that code instead — the success message reports the actual code used.
 
 Example 1 - Positional, four values:
 ```
@@ -652,12 +663,12 @@ Example - Database mode:
 ```
 gsa [(test.dat)]> HELP
 Commands in database mode:
-  SELECT <code|range|*> [WHERE ...] [VALUES (...)] - show records
-  COUNT <code|range|*> [WHERE ...]                 - count matching records
-  SHOW DATABASE                                    - database status card
-  UNLOAD [FORCE]                                   - release the database
-  HELP                                             - this help
-  BYE / QUIT                                       - exit gsa-cli
+  SELECT <code|range|*> [WHERE ...] [VALUES (...)] [ORDER BY (...)] - show records
+  COUNT <code|range|*> [WHERE ...]                                  - count matching records
+  SHOW DATABASE                                                     - database status card
+  UNLOAD [FORCE]                                                    - release the database
+  HELP                                                              - this help
+  BYE / QUIT                                                        - exit gsa-cli
 ```
 
 Interrupts;
@@ -665,3 +676,62 @@ Pressing Ctrl+C at any point interrupts the current operation and returns you to
 
 Exit codes;
 gsa-cli exits 0 on a clean interactive termination (BYE/QUIT/EOF) and on successful one-shot runs; it exits 1 on fatal boot failures, failed preloads, failed imports or playbacks, and failed verifications; and it exits 2 when handed an unrecognized combination of command-line arguments.
+
+# Companion Tool: bcgen
+
+bcgen is a standalone one-shot CSV item-code preprocessor that ships alongside gsa-cli (Decision 68). It prepares import files before `IMPORT`: it walks the first column (`ITEM_CODE`) of a CSV file and replaces blank cells, zero codes, and explicit `rnd4` / `upc-a` / `upc-a-nc` markers with freshly generated codes — while every other cell passes through byte-for-byte. It is not part of gsa-cli's command set; it is its own executable, emitted into `bin/` next to gsa-cli.exe by the main build (or into `bcgen/bin/` via the standalone debug scripts in `bcgen/`), and it reuses the same `Xml2.dll` and `CSVToolkit.dll` libraries. Its Windows file icon is a barcode (`Hopstarter-Sleek-Xp-Basic-Barcode.ico`).
+
+Usage:
+```
+usage: bcgen <input.csv> <output.csv> [--seed N]
+```
+
+It is one-shot: no session, no banner. On success it prints exactly one summary line to stdout and exits 0; every diagnostic goes to stderr with a `bcgen:` prefix and exit code 1. In-place editing (output path equal to the input path) is refused as a usage error.
+
+Cell rules;
+Only the first column is inspected, trimmed. A blank cell or an all-digits value that parses to zero (`0`, `00`, ...) gets a code generated using the settings default method; a whole-cell `rnd4`, `upc-a`, or `upc-a-nc` marker (case-insensitive) generates with that method for that row only, overriding the settings; anything else — including codes like `12345` — passes through unchanged. The header row passes through unchanged as well, but its first column must be named `ITEM_CODE` (case-insensitively) or bcgen fails before writing anything.
+
+Settings;
+bcgen reads `settings.xml` from beside its own executable when present and never writes one. A `CODE_METHOD` of `rnd4` or `upc-a-nc` makes that the default method; a missing file, missing key, empty value, or any other value leaves the default as upc-a. A corrupt settings file is a hard error (`bcgen: Settings Error: ...`).
+
+Generation;
+Codes are derived statelessly from `(seed, ordinal)` — the cell's position among same-method generations in file order — so a given `--seed N` reproduces byte-identical output on any machine. Without `--seed`, a time-based seed is used and runs differ. Generated rnd4 codes are uniform over 1000–9999; generated upc-a codes are 12 digits with a correct UPC-A check digit; generated upc-a-nc codes (Decision 70) are the same UPC-A minus its final check digit — an 11-digit base. bcgen does not detect duplicate codes: within-run duplicates (likely on large rnd4 batches) are accepted here because gsa-cli rejects duplicated ITEM_CODEs at import.
+
+Output;
+The result file is UTF-8 with BOM, CRLF between lines, no trailing newline, minimal quoting — the same contract as gsa-cli's CSV output. If processing fails after the output file was opened, the partial file is deleted; nothing half-written survives.
+
+Example 1 - Mixed cells (default method upc-a, seed pinned):
+```
+C:\> bcgen in.csv out.csv --seed 42
+bcgen: wrote out.csv - rows=7, generated=6 (rnd4=1, upc-a=4, upc-a-nc=1)
+```
+Input `in.csv` had one blank cell, two zero codes (`0`, `00`), one `rnd4` marker, one `upc-a` marker, one `upc-a-nc` marker, and one real code (`12345`). The output replaced the six target cells — four upc-a codes (12 digits), one upc-a-nc code (11 digits), and one rnd4 code (4 digits) — and left `12345` untouched.
+
+Example 2 - Settings default method rnd4:
+With a `settings.xml` beside bcgen.exe carrying `<Default id="CODE_METHOD">rnd4</Default>`, the same blank/zero cells take 4-digit codes while an explicit `upc-a` marker still wins for its row:
+```
+C:\> bcgen in.csv out.csv --seed 7
+bcgen: wrote out.csv - rows=4, generated=3 (rnd4=2, upc-a=1, upc-a-nc=0)
+```
+
+Example 3 - Settings default method upc-a-nc:
+With `<Default id="CODE_METHOD">upc-a-nc</Default>`, blank and zero cells take 11-digit check-digit-free codes while an explicit `upc-a` marker still wins for its row (note it is the same base as the first generated code, with its check digit restored):
+```
+C:\> bcgen in.csv out.csv --seed 7
+bcgen: wrote out.csv - rows=3, generated=3 (rnd4=0, upc-a=1, upc-a-nc=2)
+ITEM_CODE,NAME
+72999839894,Blank
+43069399760,Zero
+729998398943,ExplicitUpca
+```
+
+Example 4 - Usage and input errors:
+```
+C:\> bcgen in.csv in.csv --seed 1
+bcgen: Usage Error: output must differ from input (no in-place editing).
+usage: bcgen <input.csv> <output.csv> [--seed N]
+
+C:\> bcgen badhdr.csv out.csv --seed 1
+bcgen: Input Error: the first column must be named ITEM_CODE (found 'CODE').
+```
+In both cases nothing is written and the exit code is 1.

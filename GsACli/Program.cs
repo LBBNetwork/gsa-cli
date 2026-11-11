@@ -25,14 +25,17 @@ namespace GsACli
 	{
 		/// <summary>
 		/// Startup banner - authoritative wording per PROJECT.md (the
-		/// spec's launch screen). Printed exactly once at launch;
-		/// LOAD/UNLOAD never repeat it (D34).
+		/// spec's launch screen), plus the version line (D66). Printed exactly
+		/// once at launch; LOAD/UNLOAD never repeat it (D34).
 		/// </summary>
 		private static void PrintBanner()
 		{
 			Console.WriteLine("gsa-cli command line utility for EALITEMR.DAT");
 			Console.WriteLine("Copyleft 2026 - The Crusty Computer Club, https://crusty.computer");
 			Console.WriteLine("With thanks to the Dongvile Point-of-Sale Community");
+			// D66: report the binary's AssemblyVersion (GsACli/AssemblyInfo.cs
+			// is the single source of truth; 0.0.0.0 if built without it).
+			Console.WriteLine("gsa-cli version " + typeof(Program).Assembly.GetName().Version);
 		}
 
 		/// <summary>
@@ -298,17 +301,17 @@ namespace GsACli
 	}
 
 		/// <summary>
-		/// Usage table for bad invocations (Phase 1 wording kept; the
-		/// one-shot forms list their Phase 5 status honestly).
+		/// Usage table for bad invocations and --help.
 		/// </summary>
 		private static void Usage()
 		{
 			Console.WriteLine("Usage:");
-			Console.WriteLine("  gsa-cli [DB.DAT] -import F   import a CSV (Phase 5)");
-			Console.WriteLine("  gsa-cli [DB.DAT] -play S      run a play script (Phase 5)");
-			Console.WriteLine("  gsa-cli -verify <DB.DAT>     verify database integrity (one-shot)");
-			Console.WriteLine("  gsa-cli                    - interactive config mode");
-			Console.WriteLine("  gsa-cli <DB.DAT>             - interactive, database preloaded");
+			// B10: descriptions aligned to one column (longest command part + 2 spaces).
+			Console.WriteLine("  gsa-cli [DB.DAT] -import F  import a CSV");
+			Console.WriteLine("  gsa-cli [DB.DAT] -play S    run a play script");
+			Console.WriteLine("  gsa-cli -verify <DB.DAT>    verify database integrity (one-shot)");
+			Console.WriteLine("  gsa-cli                     interactive config mode");
+			Console.WriteLine("  gsa-cli <DB.DAT>            interactive, database preloaded");
 		}
 	}
 }

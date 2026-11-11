@@ -1,9 +1,6 @@
 # gsa-cli
 
-A command-line utility for maintaining EALITEMR.DAT item databases — the kind of
-file a IBM 4680-era point-of-sale register reads. Load it, browse items, insert,
-update, drop, import from CSV, export to CSV, and play back scripts — with
-transactional COMMIT/ROLLBACK semantics throughout.
+A command-line utility for maintaining EALITEMR.DAT item databases — the kind of file a IBM 4680-era point-of-sale register reads. Load it, browse items, insert, update, drop, import from CSV, export to CSV, and play back scripts — with transactional COMMIT/ROLLBACK semantics throughout.
 
 - Single executable: `gsa-cli.exe` (Windows) / `gsa-cli` (POSIX), plus its
   companion DLLs (`EalItemr.dll`, `Xml2.dll`, `CSVToolkit.dll`).
@@ -11,10 +8,11 @@ transactional COMMIT/ROLLBACK semantics throughout.
   compiler on Windows and Mono's `mcs` on POSIX. Runs from Windows XP through
   11, and on Linux/macOS under Mono.
 
-This program is licensed under The Pirate License. Please see LICENSE.txt for a
-copy of The Pirate License.
+This program is licensed under The Pirate License. Please see LICENSE.txt for a copy of The Pirate License.
 
 Cash register icon courtesy Aha-Soft, https://www.aha-soft.com
+
+Barcode label icon courtesy Hopstarter, https://www.deviantart.com/hopstarter
 
 ## Building
 
@@ -45,6 +43,7 @@ C:\> gsa-cli.exe
 gsa-cli command line utility for EALITEMR.DAT
 Copyleft 2026 - The Crusty Computer Club, https://crusty.computer
 With thanks to the Dongvile Point-of-Sale Community
+gsa-cli version 1.1.0.0
 
 No file has been loaded
 
@@ -106,15 +105,31 @@ gsa> UPDATE * WHERE SALEPRICECENTS='?00' SET SALEPRICECENTS='599';
 `*` matches any run of characters, `?` exactly one; matching is
 case-insensitive. Quoted values may contain spaces (`ITEM_NAME='MOTO RACER'`).
 
-## Documentation
+## bcgen (companion tool)
 
-- [DOCUMENTATION.md](DOCUMENTATION.md) — manual for configuration and command syntax
+A standalone one-shot CSV item-code preprocessor for preparing import files:
+it fills blank/zero `ITEM_CODE` cells and explicit `rnd4` / `upc-a` /
+`upc-a-nc` markers in the first column with generated codes (`upc-a-nc`
+is a UPC-A without its check digit), leaving everything else byte-for-byte.
+The main `build.bat` / `build.sh` also emits `bin\bcgen.exe` next to
+gsa-cli.exe for the distribution package; the standalone scripts in `bcgen/`
+remain available for debugging (Decision 68):
 
-## Testing
-
-```powershell
-# fast suite (13 tests) + slow D58 full-scan pin (t14)
-powershell -NoProfile -ExecutionPolicy Bypass -File Tools/testsuite.ps1 -IncludeSlow
+```bat
+cd bcgen
+build.bat        :: -> bin\bcgen.exe (+ Xml2.dll, CSVToolkit.dll)
 ```
 
-Byte-exact expected outputs live next to each test under `Tools/tests/`.
+```text
+C:\> bcgen in.csv out.csv --seed 42
+bcgen: wrote out.csv - rows=7, generated=6 (rnd4=1, upc-a=4, upc-a-nc=1)
+```
+
+The default method comes from `CODE_METHOD` in a `settings.xml` beside the
+executable (`rnd4`, `upc-a-nc`, or `upc-a` when absent); gsa-cli still rejects duplicated codes at
+import. See DOCUMENTATION.md ("Companion Tool: bcgen") and SPECIFICATION.md.
+
+## Documentation
+
+- [DOCUMENTATION.md](DOCUMENTATION.md) — the normative command reference and
+  behavior contract.

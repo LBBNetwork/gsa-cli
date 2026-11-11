@@ -816,12 +816,12 @@ namespace GsACli
 
 			if (key == "CODE_METHOD")
 			{
-				if (lower == "upc-a" || lower == "rnd4")
+				if (lower == "upc-a" || lower == "upc-a-nc" || lower == "rnd4")
 				{
 					stored = lower;
 					return true;
 				}
-				Console.WriteLine("Validation Error: CODE_METHOD accepts 'upc-a' or 'rnd4'.");
+				Console.WriteLine("Validation Error: CODE_METHOD accepts 'upc-a', 'upc-a-nc', or 'rnd4'.");
 				stored = null;
 				return false;
 			}
@@ -1133,12 +1133,12 @@ namespace GsACli
 				Console.WriteLine("Commands in database mode:");
 				// Descriptions align on one column: syntax field padded to the
 				// longest entry (SELECT), then " - blurb".
-				Console.WriteLine("  SELECT <code|range|*> [WHERE ...] [VALUES (...)] - show records");
-				Console.WriteLine("  COUNT <code|range|*> [WHERE ...]                 - count matching records");
-				Console.WriteLine("  SHOW DATABASE                                    - database status card");
-				Console.WriteLine("  UNLOAD [FORCE]                                   - release the database");
-				Console.WriteLine("  HELP                                             - this help");
-				Console.WriteLine("  BYE / QUIT                                       - exit gsa-cli");
+				Console.WriteLine("  SELECT <code|range|*> [WHERE ...] [VALUES (...)] [ORDER BY (...)] - show records");
+				Console.WriteLine("  COUNT <code|range|*> [WHERE ...]                                  - count matching records");
+				Console.WriteLine("  SHOW DATABASE                                                     - database status card");
+				Console.WriteLine("  UNLOAD [FORCE]                                                    - release the database");
+				Console.WriteLine("  HELP                                                              - this help");
+				Console.WriteLine("  BYE / QUIT                                                        - exit gsa-cli");
 			}
 			else
 			{
@@ -1197,6 +1197,14 @@ namespace GsACli
 			{
 				Console.WriteLine("No matching records.");
 				return;
+			}
+
+			// ORDER BY (Decision 67): presentation-only sort of the selected set.
+			// All temporaries die with ApplyOrderBy, so memory is freed after the
+			// command completes - no ratchet across repeated runs.
+			if (sel.OrderBy != null)
+			{
+				rows = ApplyOrderBy(rows, sel.OrderBy);
 			}
 
 			string[] columns = ResolveColumns(rows, sel.Columns);
@@ -1283,6 +1291,12 @@ namespace GsACli
 				return;
 			}
 
+			if (sel.OrderBy != null)
+			{
+				Console.WriteLine("Command Error: COUNT takes no ORDER BY clause.");
+				return;
+			}
+
 			try
 			{
 				RecordData[] rows = SelectRows(sel);
@@ -1311,7 +1325,7 @@ namespace GsACli
 		/// INSERT (spec order: ITEM_CODE, ITEM_NAME, DEPT, SALEPRICECENTS first;
 		/// the remaining 16 are optional and must be given as a full set - D4,
 		/// four-or-all rule). New code only (D2); existing codes get UPDATE.
-		/// rnd4/upc-a generate a free code (D32).
+		/// rnd4/upc-a/upc-a-nc generate a free code (D32/D70).
 		/// </summary>
 		/* ---------- EXPORT (D20) / IMPORT (D41/D44) CSV surface ---------- */
 
@@ -2274,7 +2288,7 @@ namespace GsACli
 				// B9: code 0 is invalid - the engine silently drops records stored
 				// under it, so substitute a generated free code per CODE_METHOD.
 				bool zeroCode = IsZeroCode(code);
-				bool generated = (lower == "rnd4" || lower == "upc-a") || zeroCode;
+				bool generated = (lower == "rnd4" || lower == "upc-a" || lower == "upc-a-nc") || zeroCode;
 
 				if (!generated)
 				{
@@ -2301,7 +2315,9 @@ namespace GsACli
 				}
 				else if (generated)
 				{
-					rec.Code = (lower == "rnd4") ? GenerateRnd4() : GenerateUpcA();
+					if (lower == "rnd4") rec.Code = GenerateRnd4();
+					else if (lower == "upc-a-nc") rec.Code = GenerateUpcANoCheck();   // D70
+					else rec.Code = GenerateUpcA();
 				}
 				else
 				{
@@ -3570,6 +3586,28 @@ namespace GsACli
 			throw new CommandSyntaxException("Database Exception: no free UPC-A code.");
 		}
 
+		/// <summary>
+		/// D70: a free UPC-A without its check digit (11-digit base) - for label
+		/// software that rejects check digits. Same scan domain as GenerateUpcA,
+		/// but a base is skipped when either its 11-digit form or its full
+		/// 12-digit form is already in use: gsa-cli's UpsertRecord overwrites on
+		/// key collision, so the used-check must cover both spellings (a naive
+		/// strip-after-generate would let consecutive calls overwrite each other).
+		/// </summary>
+		private string GenerateUpcANoCheck()
+		{
+			List<long> used = NumericCodes();
+			for (long base11 = 10000000000L; base11 <= 99999999999L; base11++)
+			{
+				if (!ContainsLong(used, base11) && !ContainsLong(used, base11 * 10 + UpcACheckDigit(base11)))
+				{
+					return base11.ToString();
+				}
+			}
+
+			throw new CommandSyntaxException("Database Exception: no free UPC-A code.");
+		}
+
 		private static int UpcACheckDigit(long first11)
 		{
 			int sum = 0;
@@ -3616,9 +3654,15 @@ namespace GsACli
 			string v;
 			if (this.settings.TryGet("CODE_METHOD", out fileKey, out v))
 			{
-				if (v.ToLowerInvariant() == "rnd4")
+				string m = v.ToLowerInvariant();
+				if (m == "rnd4")
 				{
 					return GenerateRnd4();
+				}
+
+				if (m == "upc-a-nc")
+				{
+					return GenerateUpcANoCheck();   // D70: UPC-A without check digit
 				}
 			}
 
@@ -3695,50 +3739,85 @@ namespace GsACli
 			public long RangeHi;
 			public WhereExpr Where;
 			public string[] Columns;
+			public OrderBySpec[] OrderBy;
+		}
+
+		/// <summary>
+		/// One sort key of an ORDER BY clause (Decision 67): a column name plus
+		/// direction. Parsed by ParseOrderBy, applied by ApplyOrderBy.
+		/// </summary>
+		private class OrderBySpec
+		{
+			public string Column;
+			public bool Descending;
 		}
 
 		private Selection ParseSelection(string[] tokens, string verb)
 		{
 			if (tokens.Length < 2 || tokens[1].Length == 0)
 			{
-				throw new CommandSyntaxException(verb + " takes a target (*, code, or range), optionally WHERE and VALUES.");
+				throw new CommandSyntaxException(verb + " takes a target (*, code, or range), optionally WHERE, VALUES, and ORDER BY.");
 			}
 
 			Selection sel = new Selection();
 			ApplyTarget(sel, tokens[1]);
 
 			int i = 2;
-			while (i < tokens.Length)
-			{
-				string t = tokens[i].ToUpperInvariant();
 
-				if (t == "WHERE")
+			// Optional WHERE clause (Decision 9).
+			if (i < tokens.Length && tokens[i].ToUpperInvariant() == "WHERE")
+			{
+				i++;
+				int end = FindClauseEnd(tokens, i);
+				sel.Where = ParseWhere(tokens, i, end);
+				i = end;
+			}
+
+			// Optional VALUES clause (Decision 26).
+			if (i < tokens.Length && tokens[i].ToUpperInvariant() == "VALUES")
+			{
+				if (i + 1 >= tokens.Length)
 				{
-					i++;
-					int end = i;
-					while (end < tokens.Length && tokens[end].ToUpperInvariant() != "VALUES")
-					{
-						end++;
-					}
-					sel.Where = ParseWhere(tokens, i, end);
-					i = end;
+					throw new CommandSyntaxException("Command Error: VALUES takes a column list in parentheses.");
 				}
-				else if (t == "VALUES")
-				{
-					if (i + 1 >= tokens.Length)
-					{
-						throw new CommandSyntaxException("Command Error: VALUES takes a column list in parentheses.");
-					}
-					sel.Columns = ParseColumns(tokens, i + 1);
-					break; // VALUES is the last clause on the line
-				}
-				else
-				{
-					throw new CommandSyntaxException(verb + " syntax error: unexpected token '" + tokens[i] + "'.");
-				}
+				int end = FindClauseEnd(tokens, i + 1);
+				sel.Columns = ParseColumns(tokens, i + 1, end);
+				i = end;
+			}
+
+			// Optional ORDER BY clause (Decision 67) - always last.
+			if (i < tokens.Length && tokens[i].ToUpperInvariant() == "ORDER")
+			{
+				sel.OrderBy = ParseOrderBy(tokens, i + 1);
+				i = tokens.Length;
+			}
+
+			if (i < tokens.Length)
+			{
+				throw new CommandSyntaxException(verb + " syntax error: unexpected token '" + tokens[i] + "'.");
 			}
 
 			return sel;
+		}
+
+		/// <summary>
+		/// First index at or after `from` holding a bare clause keyword (VALUES
+		/// or ORDER), or the token count when there is none. WHERE values are
+		/// always attached to their field (`FIELD=VALUE`) so they can never be
+		/// mistaken for a clause keyword.
+		/// </summary>
+		private static int FindClauseEnd(string[] tokens, int from)
+		{
+			for (int i = from; i < tokens.Length; i++)
+			{
+				string t = tokens[i].ToUpperInvariant();
+				if (t == "VALUES" || t == "ORDER")
+				{
+					return i;
+				}
+			}
+
+			return tokens.Length;
 		}
 
 		/// <summary>
@@ -3789,11 +3868,11 @@ namespace GsACli
 			return new string[] { "ITEM_CODE", "ITEM_NAME", "DEPT", "SALEPRICECENTS", "QTY", "MVMT", "REQ_QTY", "REQ_PRICE", "ALL_HOURS", "RESTRICTED_HOURS", "NO_RETURN", "GIVEAWAY", "TAX1", "TAX2", "TAX3", "TAX4", "PRICE_METHOD", "DCS_METHOD" };
 		}
 
-		private string[] ParseColumns(string[] tokens, int start)
+		private string[] ParseColumns(string[] tokens, int start, int end)
 		{
 			List<string> names = new List<string>();
 
-			for (int i = start; i < tokens.Length; i++)
+			for (int i = start; i < end; i++)
 			{
 				string t = tokens[i];
 				if (t.StartsWith("("))
@@ -3830,6 +3909,96 @@ namespace GsACli
 			}
 
 			return names.ToArray();
+		}
+
+		/// <summary>
+		/// Parses the ORDER BY clause body (Decision 67): `BY` followed by a
+		/// parenthesized list of `<column> [ASC|DESC]` entries, default ascending.
+		/// Parentheses are required for consistency with VALUES; direction words
+		/// are case-insensitive and optional per key.
+		/// </summary>
+		private OrderBySpec[] ParseOrderBy(string[] tokens, int from)
+		{
+			if (from >= tokens.Length || tokens[from].ToUpperInvariant() != "BY")
+			{
+				throw new CommandSyntaxException("Command Error: expected BY after ORDER.");
+			}
+
+			int i = from + 1;
+			if (i >= tokens.Length)
+			{
+				throw new CommandSyntaxException("Command Error: ORDER BY takes a sort key list in parentheses.");
+			}
+
+			// Parentheses required (Decision 67): the first token of the list must
+			// open with '(' - same shape as VALUES.
+			if (!tokens[i].StartsWith("("))
+			{
+				throw new CommandSyntaxException("Command Error: ORDER BY takes a sort key list in parentheses.");
+			}
+
+			List<string> pieces = new List<string>();
+			for (; i < tokens.Length; i++)
+			{
+				string t = tokens[i];
+				if (t.StartsWith("("))
+				{
+					t = t.Substring(1);
+				}
+				if (t.EndsWith(")"))
+				{
+					t = t.Substring(0, t.Length - 1);
+				}
+
+				string[] parts = t.Split(new char[] { ',' });
+				for (int p = 0; p < parts.Length; p++)
+				{
+					string part = parts[p].Trim();
+					if (part.Length > 0)
+					{
+						pieces.Add(part);
+					}
+				}
+			}
+
+			List<OrderBySpec> keys = new List<OrderBySpec>();
+			int k = 0;
+			while (k < pieces.Count)
+			{
+				string name = pieces[k].ToUpperInvariant();
+				if (!IsKnownField(name))
+				{
+					throw new CommandSyntaxException("Command Error: unknown column '" + pieces[k] + "'.");
+				}
+				k++;
+
+				bool descending = false;
+				if (k < pieces.Count)
+				{
+					string dir = pieces[k].ToUpperInvariant();
+					if (dir == "ASC")
+					{
+						k++;
+					}
+					else if (dir == "DESC")
+					{
+						descending = true;
+						k++;
+					}
+				}
+
+				OrderBySpec spec = new OrderBySpec();
+				spec.Column = name;
+				spec.Descending = descending;
+				keys.Add(spec);
+			}
+
+			if (keys.Count == 0)
+			{
+				throw new CommandSyntaxException("Command Error: ORDER BY takes a sort key list in parentheses.");
+			}
+
+			return keys.ToArray();
 		}
 
 		/* ---------- WHERE (D9 boolean predicates, D7 normalized match) ---------- */
@@ -4176,6 +4345,200 @@ namespace GsACli
 			}
 
 			return pattern.Length == value.Length;
+		}
+
+		/* ---------- ORDER BY (Decision 67) ---------- */
+
+		// Per-row accessors for sort key construction. Method-group delegates keep
+		// ApplyOrderBy's column dispatch a flat table instead of a switch per row.
+		private delegate long LongAt(RecordData[] rows, int i);
+		private delegate string TextAt(RecordData[] rows, int i);
+		private delegate bool BoolAt(RecordData[] rows, int i);
+
+		private static long AtSalePriceCents(RecordData[] r, int i) { return r[i].SalePriceCents; }
+		private static long AtSalePrice2(RecordData[] r, int i)     { return r[i].SalePrice2Cents; }
+		private static long AtQty(RecordData[] r, int i)             { return r[i].Qty; }
+		private static long AtPriceMethod(RecordData[] r, int i)     { return r[i].PriceMethod; }
+		private static long AtDcsMethod(RecordData[] r, int i)       { return r[i].DcsMethod; }
+
+		private static string AtCode(RecordData[] r, int i)          { return r[i].Code; }
+		private static string AtDept(RecordData[] r, int i)          { return r[i].Dept; }
+		private static string AtName(RecordData[] r, int i)          { return r[i].ItemName; }
+
+		private static bool AtMvmt(RecordData[] r, int i)            { return r[i].Mvmt; }
+		private static bool AtReqQty(RecordData[] r, int i)          { return r[i].ReqQty; }
+		private static bool AtReqPrice(RecordData[] r, int i)        { return r[i].ReqPrice; }
+		private static bool AtAllHours(RecordData[] r, int i)        { return r[i].AllHours; }
+		private static bool AtRestrictedHours(RecordData[] r, int i) { return r[i].RestrictedHours; }
+		private static bool AtNoReturn(RecordData[] r, int i)        { return r[i].NoReturn; }
+		private static bool AtGiveaway(RecordData[] r, int i)        { return r[i].Giveaway; }
+		private static bool AtTax1(RecordData[] r, int i)            { return r[i].Tax1; }
+		private static bool AtTax2(RecordData[] r, int i)            { return r[i].Tax2; }
+		private static bool AtTax3(RecordData[] r, int i)            { return r[i].Tax3; }
+		private static bool AtTax4(RecordData[] r, int i)            { return r[i].Tax4; }
+
+		/// <summary>
+		/// One precomputed sort key (Decision 67): a long[] for numeric columns or
+		/// a string[] of references for text columns, plus direction. Built once per
+		/// ORDER BY so the inner comparison loop stays cheap.
+		/// </summary>
+		private sealed class SortKey
+		{
+			public long[] Numeric;
+			public string[] Text;
+			public bool Descending;
+		}
+
+		/// <summary>
+		/// The precomputed keys for one ORDER BY, and the comparison over them.
+		/// Every array here is local to one ApplyOrderBy call (Decision 67): nothing
+		/// outlives the command, so a sorted SELECT's working set is reclaimed by GC
+		/// instead of ratcheting across runs.
+		/// </summary>
+		private sealed class RowOrdering
+		{
+			public SortKey[] Keys;
+
+			public int Compare(int a, int b)
+			{
+				for (int k = 0; k < Keys.Length; k++)
+				{
+					SortKey key = Keys[k];
+					int c;
+					if (key.Numeric != null)
+						c = CompareLong(key.Numeric[a], key.Numeric[b]);
+					else
+						c = string.CompareOrdinal(key.Text[a], key.Text[b]);
+					if (c != 0)
+						return key.Descending ? -c : c;
+				}
+				// Stable tie-break: equal keys keep database scan order.
+				return a.CompareTo(b);
+			}
+
+			private static int CompareLong(long x, long y)
+			{
+				if (x < y) return -1;
+				if (x > y) return 1;
+				return 0;
+			}
+		}
+
+		/// <summary>
+		/// Applies an ORDER BY clause to a selected row set (Decision 67):
+		/// presentation-only, the engine's own array is never mutated. Returns a new
+		/// RecordData[] in sort order; every temporary (key arrays, index
+		/// permutation) dies with this call so memory is freed after completion.
+		/// </summary>
+		private static RecordData[] ApplyOrderBy(RecordData[] rows, OrderBySpec[] specs)
+		{
+			int n = rows.Length;
+			if (n < 2 || specs == null || specs.Length == 0)
+				return rows;
+
+			SortKey[] keys = new SortKey[specs.Length];
+			for (int k = 0; k < specs.Length; k++)
+			{
+				string col = specs[k].Column;
+				SortKey key = new SortKey();
+				key.Descending = specs[k].Descending;
+
+				if (col == "ITEM_CODE")             BuildCodeLike(key, rows, AtCode);
+				else if (col == "DEPT")             BuildCodeLike(key, rows, AtDept);
+				else if (col == "SALEPRICECENTS")   key.Numeric = BuildNumeric(rows, AtSalePriceCents);
+				else if (col == "SALEPRICE2")       key.Numeric = BuildNumeric(rows, AtSalePrice2);
+				else if (col == "QTY")              key.Numeric = BuildNumeric(rows, AtQty);
+				else if (col == "PRICE_METHOD")     key.Numeric = BuildNumeric(rows, AtPriceMethod);
+				else if (col == "DCS_METHOD")       key.Numeric = BuildNumeric(rows, AtDcsMethod);
+				else if (col == "ITEM_NAME")        key.Text = BuildText(rows, AtName);
+				else if (col == "MVMT")             key.Numeric = BuildFlag(rows, AtMvmt);
+				else if (col == "REQ_QTY")          key.Numeric = BuildFlag(rows, AtReqQty);
+				else if (col == "REQ_PRICE")        key.Numeric = BuildFlag(rows, AtReqPrice);
+				else if (col == "ALL_HOURS")        key.Numeric = BuildFlag(rows, AtAllHours);
+				else if (col == "RESTRICTED_HOURS") key.Numeric = BuildFlag(rows, AtRestrictedHours);
+				else if (col == "NO_RETURN")        key.Numeric = BuildFlag(rows, AtNoReturn);
+				else if (col == "GIVEAWAY")         key.Numeric = BuildFlag(rows, AtGiveaway);
+				else if (col == "TAX1")             key.Numeric = BuildFlag(rows, AtTax1);
+				else if (col == "TAX2")             key.Numeric = BuildFlag(rows, AtTax2);
+				else if (col == "TAX3")             key.Numeric = BuildFlag(rows, AtTax3);
+				else if (col == "TAX4")             key.Numeric = BuildFlag(rows, AtTax4);
+
+				keys[k] = key;
+			}
+
+			RowOrdering ordering = new RowOrdering();
+			ordering.Keys = keys;
+
+			int[] order = new int[n];
+			for (int i = 0; i < n; i++)
+				order[i] = i;
+			Array.Sort(order, new Comparison<int>(ordering.Compare));
+
+			RecordData[] result = new RecordData[n];
+			for (int i = 0; i < n; i++)
+				result[i] = rows[order[i]];
+			return result;
+		}
+
+		private static long[] BuildNumeric(RecordData[] rows, LongAt at)
+		{
+			int n = rows.Length;
+			long[] key = new long[n];
+			for (int i = 0; i < n; i++)
+				key[i] = at(rows, i);
+			return key;
+		}
+
+		private static string[] BuildText(RecordData[] rows, TextAt at)
+		{
+			int n = rows.Length;
+			string[] key = new string[n];
+			for (int i = 0; i < n; i++)
+				key[i] = at(rows, i);
+			return key;
+		}
+
+		private static long[] BuildFlag(RecordData[] rows, BoolAt at)
+		{
+			int n = rows.Length;
+			long[] key = new long[n];
+			for (int i = 0; i < n; i++)
+				key[i] = at(rows, i) ? 1 : 0;
+			return key;
+		}
+
+		/// <summary>
+		/// ITEM_CODE/DEPT keys (Decision 67): numeric when every value in the result
+		/// set parses as an integer, ordinal string order across the board otherwise
+		/// - hex codes exist in real files and a per-pair mixed rule would break
+		/// transitivity.
+		/// </summary>
+		private static void BuildCodeLike(SortKey key, RecordData[] rows, TextAt at)
+		{
+			int n = rows.Length;
+			long[] numeric = new long[n];
+			bool allNumeric = true;
+			for (int i = 0; i < n && allNumeric; i++)
+				allNumeric = TryParseLong(at(rows, i), out numeric[i]);
+
+			if (allNumeric)
+				key.Numeric = numeric;
+			else
+				key.Text = BuildText(rows, at);
+		}
+
+		private static bool TryParseLong(string s, out long v)
+		{
+			try
+			{
+				v = long.Parse(s);
+				return true;
+			}
+			catch (Exception)
+			{
+				v = 0;
+				return false;
+			}
 		}
 
 		/* ---------- selection + rendering ---------- */
